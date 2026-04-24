@@ -11,6 +11,12 @@
         While currentToken.kind <> cToken.EOF
             lstResults.Items.Add(currentToken.ToString)
             currentToken = scanner.scan
+            If currentToken.kind = cToken.UNKNOWN Then
+                MessageBox.Show("An unrecognized character or token was encountered: " & currentToken.ToString(),
+                    "Lexical Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error)
+            End If
         End While
     End Sub
 

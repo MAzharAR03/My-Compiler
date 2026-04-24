@@ -33,14 +33,29 @@ Public Class cScanner
             While Char.IsLetterOrDigit(currentChar)
                 takeIt()
             End While
-        Else
+        ElseIf Char.IsDigit(currentChar) Then
             takeIt()
+            state = 3
+            While Char.IsDigit(currentChar)
+                takeIt()
+            End While
+        ElseIf "+-*/=".Contains(currentChar) Then
+            takeIt()
+            state = 4
         End If
         Select Case state
             Case 2
                 Return cToken.IDENTIFIER
+            Case 3
+                Return cToken.INTEGERTYPE
+            Case 4
+                Return cToken.OPERATORTYPE
             Case Else
                 Return cToken.UNKNOWN
         End Select
+    End Function
+
+    Private Function isMnemonic(String s ByVal) As Boolean
+
     End Function
 End Class
