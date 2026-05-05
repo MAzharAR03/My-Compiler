@@ -29,6 +29,7 @@ Partial Class frmMyCompiler
         btnLoadFile = New Button()
         btnParse = New Button()
         btnExit = New Button()
+        OpenFileDialog1 = New OpenFileDialog()
         SuspendLayout()
         ' 
         ' txtProgram
@@ -93,9 +94,13 @@ Partial Class frmMyCompiler
         btnExit.Text = "Exit"
         btnExit.UseVisualStyleBackColor = True
         ' 
+        ' OpenFileDialog1
+        ' 
+        OpenFileDialog1.FileName = "OpenFileDialog1"
+        ' 
         ' frmMyCompiler
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(578, 450)
         Controls.Add(btnExit)
@@ -118,5 +123,6 @@ Partial Class frmMyCompiler
     Friend WithEvents btnLoadFile As Button
     Friend WithEvents btnParse As Button
     Friend WithEvents btnExit As Button
+    Friend WithEvents OpenFileDialog1 As OpenFileDialog
 
 End Class

@@ -55,7 +55,4 @@ Public Class cScanner
         End Select
     End Function
 
-    Private Function isMnemonic(String s ByVal) As Boolean
-
-    End Function
 End Class
