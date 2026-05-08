@@ -43,9 +43,15 @@ Public Class cScanner
         '    takeIt()
         '    state = 4
         'End If
-        If currentChar = "A" Or currentChar = "B" Or currentChar = "C" Then
+        If currentChar = "i" Then
             takeIt()
-            state = 2
+            If currentChar = "d" Then
+                takeIt()
+                state = 2
+            ElseIf currentChar = "f" Then
+                takeIt()
+                state = 11
+            End If
         ElseIf currentChar = "=" Then
             takeIt()
             state = 3
@@ -64,6 +70,21 @@ Public Class cScanner
         ElseIf currentChar = ")" Then
             takeIt()
             state = 8
+        ElseIf currentChar = "{" Then
+            takeIt()
+            state = 9
+        ElseIf currentChar = "}" Then
+            takeIt()
+            state = 10
+        ElseIf currentChar = "e" Then
+            takeIt()
+            takeIt()
+            takeIt()
+            takeIt()
+            state = 12
+        ElseIf currentChar = "0" Or currentChar = "1" Then
+            takeIt()
+            state = 13
         End If
         Select Case state
             Case 2
@@ -84,6 +105,16 @@ Public Class cScanner
                 Return cToken.LeftPara
             Case 8
                 Return cToken.RightPara
+            Case 9
+                Return cToken.OPENBRACES
+            Case 10
+                Return cToken.CLOSEBRACES
+            Case 11
+                Return cToken.IFTOKEN
+            Case 12
+                Return cToken.ELSETOKEN
+            Case 13
+                Return cToken.EXPRESSION
             Case Else
                 Return cToken.UNKNOWN
         End Select

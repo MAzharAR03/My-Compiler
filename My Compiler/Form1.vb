@@ -1,24 +1,21 @@
 ﻿Imports System.IO
 Public Class frmMyCompiler
+    Dim nextToken As cToken
     Private Sub txtProgram_TextChanged(sender As Object, e As EventArgs) Handles txtProgram.TextChanged
 
     End Sub
 
     Private Sub btnParse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnParse.Click
-        Dim scanner As cScanner = New cScanner
-        Dim currentToken As cToken
         lstResults.Items.Clear()
-        currentToken = scanner.scan
-        While currentToken.kind <> cToken.EOF
-            lstResults.Items.Add(currentToken.ToString)
-            currentToken = scanner.scan
-            If currentToken.kind = cToken.UNKNOWN Then
-                MessageBox.Show("An unrecognized character or token was encountered: " & currentToken.ToString(),
-                    "Lexical Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error)
-            End If
-        End While
+        syntaxError = False
+        scanner = New cScanner
+        nextToken = scanner.scan
+        parse_program()
+        If syntaxError Then
+            lstResults.Items.Add("Syntax Error!")
+        Else
+            lstResults.Items.Add("Syntax Correct!")
+        End If
     End Sub
 
     Private Sub frmMyCompiler_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -52,4 +49,75 @@ Public Class frmMyCompiler
             End If
         End Try
     End Sub
+
+    Private Sub acceptToken(ByVal k As Integer)
+        If nextToken.kind = k Then
+            lstResults.Items.Add(nextToken.ToString)
+            nextToken = scanner.scan
+        Else
+            syntaxError = True
+        End If
+    End Sub
+
+    Private Sub parse_program()
+        Select Case nextToken.kind
+            Case cToken.OPENBRACES
+                acceptToken(cToken.OPENBRACES)
+                parse_statement()
+                acceptToken(cToken.CLOSEBRACES)
+            Case Else
+                syntaxError = True
+        End Select
+    End Sub
+
+    Private Sub parse_statement()
+        Select Case nextToken.kind
+            Case cToken.IFTOKEN
+                parse_if()
+            Case cToken.IDENTIFIER
+                parse_assign()
+            Case Else
+                syntaxError = True
+        End Select
+    End Sub
+
+    Private Sub parse_if()
+        acceptToken(cToken.IFTOKEN)
+        acceptToken(cToken.LeftPara)
+        parse_expression()
+        acceptToken(cToken.RightPara)
+        parse_statement()
+        parse_else()
+    End Sub
+
+    Private Sub parse_expression()
+        Select Case nextToken.kind
+            Case cToken.EXPRESSION
+                acceptToken(cToken.EXPRESSION)
+            Case Else
+                syntaxError = True
+        End Select
+    End Sub
+
+    Private Sub parse_assign()
+        Select Case nextToken.kind
+            Case cToken.IDENTIFIER
+                acceptToken(cToken.IDENTIFIER)
+                acceptToken(cToken.ASSIGNMENT)
+                parse_expression()
+            Case Else
+                syntaxError = True
+        End Select
+    End Sub
+
+    Private Sub parse_else()
+        Select Case nextToken.kind
+            Case cToken.ELSETOKEN
+                acceptToken(cToken.ELSETOKEN)
+                parse_statement()
+            Case Else
+                Return
+        End Select
+    End Sub
+
 End Class

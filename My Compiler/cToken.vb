@@ -29,7 +29,18 @@
             Return "LeftPara: " & spelling
         ElseIf kind = 8 Then
             Return "RightPara: " & spelling
+        ElseIf kind = 9 Then
+            Return "OPENBRACES: " & spelling
+        ElseIf kind = 10 Then
+            Return "CLOSEBRACES: " & spelling
+        ElseIf kind = 11 Then
+            Return "IFTOKEN: " & spelling
+        ElseIf kind = 12 Then
+            Return "ELSETOKEN: " & spelling
+        ElseIf kind = 13 Then
+            Return "EXPRESSION: " & spelling
         End If
+
     End Function
 
     Public Shared UNKNOWN As Integer = 0
@@ -44,4 +55,9 @@
     Public Shared Multiply As Integer = 6
     Public Shared LeftPara As Integer = 7
     Public Shared RightPara As Integer = 8
+    Public Shared OPENBRACES As Integer = 9
+    Public Shared CLOSEBRACES As Integer = 10
+    Public Shared IFTOKEN As Integer = 11
+    Public Shared ELSETOKEN As Integer = 12
+    Public Shared EXPRESSION As Integer = 13
 End Class
