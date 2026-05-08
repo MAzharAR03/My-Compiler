@@ -28,8 +28,9 @@ Partial Class frmMyCompiler
         ResultsLabel = New Label()
         btnLoadFile = New Button()
         btnParse = New Button()
-        btnExit = New Button()
         OpenFileDialog1 = New OpenFileDialog()
+        SaveFileDialog1 = New SaveFileDialog()
+        btnSaveResults = New Button()
         SuspendLayout()
         ' 
         ' txtProgram
@@ -85,25 +86,25 @@ Partial Class frmMyCompiler
         btnParse.Text = "Parse"
         btnParse.UseVisualStyleBackColor = True
         ' 
-        ' btnExit
-        ' 
-        btnExit.Location = New Point(449, 372)
-        btnExit.Name = "btnExit"
-        btnExit.Size = New Size(75, 23)
-        btnExit.TabIndex = 6
-        btnExit.Text = "Exit"
-        btnExit.UseVisualStyleBackColor = True
-        ' 
         ' OpenFileDialog1
         ' 
         OpenFileDialog1.FileName = "OpenFileDialog1"
         ' 
+        ' btnSaveResults
+        ' 
+        btnSaveResults.Location = New Point(444, 372)
+        btnSaveResults.Name = "btnSaveResults"
+        btnSaveResults.Size = New Size(80, 23)
+        btnSaveResults.TabIndex = 7
+        btnSaveResults.Text = "Save Results"
+        btnSaveResults.UseVisualStyleBackColor = True
+        ' 
         ' frmMyCompiler
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(578, 450)
-        Controls.Add(btnExit)
+        Controls.Add(btnSaveResults)
         Controls.Add(btnParse)
         Controls.Add(btnLoadFile)
         Controls.Add(ResultsLabel)
@@ -122,7 +123,8 @@ Partial Class frmMyCompiler
     Friend WithEvents ResultsLabel As Label
     Friend WithEvents btnLoadFile As Button
     Friend WithEvents btnParse As Button
-    Friend WithEvents btnExit As Button
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
+    Friend WithEvents SaveFileDialog1 As SaveFileDialog
+    Friend WithEvents btnSaveResults As Button
 
 End Class
