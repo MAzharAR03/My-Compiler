@@ -1,4 +1,5 @@
 ﻿Imports Microsoft.VisualBasic
+Imports Microsoft.Win32
 
 Public Class cScanner
     Private currentChar As Char = frmMyCompiler.txtProgram.Text(0)
@@ -27,97 +28,103 @@ Public Class cScanner
         If currentIndex = frmMyCompiler.txtProgram.Text.Length Then
             Return cToken.EOF
         End If
-        'If Char.IsLetter(currentChar) Then
-        '    takeIt()
-        '    state = 2
-        '    While Char.IsLetterOrDigit(currentChar)
-        '        takeIt()
-        '    End While
-        'ElseIf Char.IsDigit(currentChar) Then
-        '    takeIt()
-        '    state = 3
-        '    While Char.IsDigit(currentChar)
-        '        takeIt()
-        '    End While
-        'ElseIf "+-*/=".Contains(currentChar) Then
-        '    takeIt()
-        '    state = 4
-        'End If
-        If currentChar = "i" Then
+        If currentChar = "a" Then
             takeIt()
-            If currentChar = "d" Then
+            If currentChar = "a" Then
                 takeIt()
-                state = 2
+                If currentChar >= "0" AndAlso currentChar <= "9" Then
+                    takeIt()
+                    Return cToken.IDENTIFIER
+                ElseIf currentChar = "<" Or currentChar = ">" Or currentChar = "=" Or currentChar = "!" Then
+                    takeIt()
+                    Return cToken.CONDITION
+                End If
+            End If
+        ElseIf currentChar >= "0" AndAlso currentChar <= "3" Then
+            takeIt()
+            While currentChar >= "0" AndAlso currentChar <= "3"
+                takeIt()
+                If currentIndex >= frmMyCompiler.txtProgram.Text.Length Then Exit While
+            End While
+            Return cToken.NUMBER
+        ElseIf currentChar = "@" Then
+            takeIt()
+            If currentChar = "i" Then
+                takeIt()
+                Return cToken.STATEMENT
+            ElseIf currentChar = "b" Then
+                takeIt()
+                Return cToken.BEGINTOKEN
             ElseIf currentChar = "f" Then
                 takeIt()
-                state = 11
+                Return cToken.FUNCTIONTOKEN
+            ElseIf currentChar = "e" Then
+                takeIt()
+                Return cToken.ENDTOKEN
+            ElseIf currentChar = "8" Then
+                takeIt()
+                If currentChar = "0" Then
+                    takeIt()
+                    If currentChar = "0" Then
+                        takeIt()
+                        If currentChar = "@" Then
+                            takeIt()
+                            Return cToken.PROGRAM
+                        End If
+                    End If
+                End If
             End If
-        ElseIf currentChar = "=" Then
+        ElseIf currentChar = "n" Then
             takeIt()
-            state = 3
-        ElseIf currentChar = ";" Then
+            If currentChar = "u" Then
+                takeIt()
+                If currentChar = "m" Then
+                    takeIt()
+                    Return cToken.TYPE
+                End If
+            End If
+        ElseIf currentChar = "c" Then
             takeIt()
-            state = 4
-        ElseIf currentChar = "+" Then
-            takeIt()
-            state = 5
-        ElseIf currentChar = "*" Then
-            takeIt()
-            state = 6
+            If currentChar = "h" Then
+                takeIt()
+                If currentChar = "a" Then
+                    takeIt()
+                    If currentChar = "r" Then
+                        takeIt()
+                        Return cToken.TYPE
+                    End If
+                End If
+            End If
         ElseIf currentChar = "(" Then
             takeIt()
-            state = 7
+            Return cToken.LEFTPAREN
         ElseIf currentChar = ")" Then
             takeIt()
-            state = 8
+            Return cToken.RIGHTPAREN
         ElseIf currentChar = "{" Then
             takeIt()
-            state = 9
+            Return cToken.OPENBRACE
         ElseIf currentChar = "}" Then
             takeIt()
-            state = 10
-        ElseIf currentChar = "e" Then
+            Return cToken.CLOSEBRACE
+        ElseIf currentChar = "*" Then
             takeIt()
+            Return cToken.MULTIPY
+        ElseIf currentChar = "+" Then
             takeIt()
+            Return cToken.ADDITION
+        ElseIf currentChar = "=" Then
             takeIt()
+            Return cToken.ASSIGNMENT
+        ElseIf currentChar = "." Then
             takeIt()
-            state = 12
-        ElseIf currentChar = "0" Or currentChar = "1" Then
+            Return cToken.PERIOD
+        ElseIf currentChar = "," Then
             takeIt()
-            state = 13
+            Return cToken.COMMA
+        Else
+            Return cToken.UNKNOWN
         End If
-        Select Case state
-            Case 2
-                Return cToken.IDENTIFIER
-                'Case 3
-                '    Return cToken.INTEGERTYPE
-                'Case 4
-                '    Return cToken.OPERATORTYPE
-            Case 3
-                Return cToken.ASSIGNMENT
-            Case 4
-                Return cToken.SEMICOLON
-            Case 5
-                Return cToken.Plus
-            Case 6
-                Return cToken.Multiply
-            Case 7
-                Return cToken.LeftPara
-            Case 8
-                Return cToken.RightPara
-            Case 9
-                Return cToken.OPENBRACES
-            Case 10
-                Return cToken.CLOSEBRACES
-            Case 11
-                Return cToken.IFTOKEN
-            Case 12
-                Return cToken.ELSETOKEN
-            Case 13
-                Return cToken.EXPRESSION
-            Case Else
-                Return cToken.UNKNOWN
-        End Select
     End Function
 
 End Class

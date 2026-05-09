@@ -8,15 +8,17 @@ Public Class frmMyCompiler
 
     Private Sub btnParse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnParse.Click
         lstResults.Items.Clear()
+        lstResults.Items.Add("<results>")
         syntaxError = False
         scanner = New cScanner
         nextToken = scanner.scan
         parse_program()
         If syntaxError Then
-            'lstResults.Items.Add("Syntax Error!")
+            lstResults.Items.Add("Syntax Error!")
         Else
-            'lstResults.Items.Add("Syntax Correct!")
+            lstResults.Items.Add("Syntax Correct!")
         End If
+        lstResults.Items.Add("</results>")
     End Sub
 
     Private Sub frmMyCompiler_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -63,71 +65,190 @@ Public Class frmMyCompiler
     Private Sub parse_program()
         lstResults.Items.Add("<program>")
         Select Case nextToken.kind
-            Case cToken.OPENBRACES
-                acceptToken(cToken.OPENBRACES)
-                parse_statement()
-                acceptToken(cToken.CLOSEBRACES)
+            Case cToken.PROGRAM
+                acceptToken(cToken.PROGRAM)
+                acceptToken(cToken.BEGINTOKEN)
+                parse_functions()
+                acceptToken(cToken.ENDTOKEN)
             Case Else
                 syntaxError = True
         End Select
         lstResults.Items.Add("</program>")
     End Sub
 
-    Private Sub parse_statement()
-        lstResults.Items.Add("<statement>")
+    Private Sub parse_functions()
         Select Case nextToken.kind
-            Case cToken.IFTOKEN
-                parse_if()
+            Case cToken.FUNCTIONTOKEN
+                parse_function()
+                parse_functions()
+            Case Else
+                Return
+        End Select
+    End Sub
+
+    Private Sub parse_function()
+        lstResults.Items.Add("<function>")
+        Select Case nextToken.kind
+            Case cToken.FUNCTIONTOKEN
+                acceptToken(cToken.FUNCTIONTOKEN)
+                parse_header()
+                acceptToken(cToken.BEGINTOKEN)
+                parse_variables()
+                parse_statements()
+                acceptToken(cToken.ENDTOKEN)
+                acceptToken(cToken.FUNCTIONTOKEN)
+            Case Else
+                syntaxError = True
+        End Select
+        lstResults.Items.Add("</function>")
+    End Sub
+
+    Private Sub parse_header()
+        lstResults.Items.Add("<header>")
+        Select Case nextToken.kind
+            Case cToken.TYPE
+                acceptToken(cToken.TYPE)
+                acceptToken(cToken.IDENTIFIER)
+                acceptToken(cToken.LEFTPAREN)
+                parse_parameters()
+                acceptToken(cToken.RIGHTPAREN)
+            Case Else
+                syntaxError = True
+        End Select
+        lstResults.Items.Add("</header>")
+    End Sub
+
+
+    Private Sub parse_parameters()
+        Select Case nextToken.kind
             Case cToken.IDENTIFIER
-                parse_assign()
+                acceptToken(cToken.IDENTIFIER)
+                parse_parameters_prime()
             Case Else
                 syntaxError = True
         End Select
-        lstResults.Items.Add("</statement>")
     End Sub
 
-    Private Sub parse_if()
-        lstResults.Items.Add("<If>")
-        acceptToken(cToken.IFTOKEN)
-        acceptToken(cToken.LeftPara)
-        parse_expression()
-        acceptToken(cToken.RightPara)
-        parse_statement()
-        parse_else()
-        lstResults.Items.Add("</If>")
-    End Sub
-
-    Private Sub parse_expression()
+    Private Sub parse_parameters_prime()
         Select Case nextToken.kind
-            Case cToken.EXPRESSION
-                acceptToken(cToken.EXPRESSION)
+            Case cToken.COMMA
+                acceptToken(cToken.COMMA)
+                acceptToken(cToken.IDENTIFIER)
+                parse_parameters_prime()
+            Case Else
+                Return
+        End Select
+    End Sub
+
+    Private Sub parse_variables()
+        Select Case nextToken.kind
+            Case cToken.TYPE
+                parse_variable()
+                parse_variables()
+            Case Else
+                Return
+        End Select
+    End Sub
+
+    Private Sub parse_variable()
+        Select Case nextToken.kind
+            Case cToken.TYPE
+                acceptToken(cToken.TYPE)
+                acceptToken(cToken.IDENTIFIER)
+                acceptToken(cToken.PERIOD)
             Case Else
                 syntaxError = True
         End Select
     End Sub
 
-    Private Sub parse_assign()
+    Private Sub parse_statements()
+        Select Case nextToken.kind
+            Case cToken.IDENTIFIER, cToken.STATEMENT
+                parse_statement()
+                parse_statements()
+            Case Else
+                Return
+        End Select
+    End Sub
+
+    Private Sub parse_statement()
         Select Case nextToken.kind
             Case cToken.IDENTIFIER
                 acceptToken(cToken.IDENTIFIER)
                 acceptToken(cToken.ASSIGNMENT)
+                parse_expression()
+                acceptToken(cToken.PERIOD)
+            Case cToken.STATEMENT
+                acceptToken(cToken.STATEMENT)
+                acceptToken(cToken.LEFTPAREN)
+                parse_condition()
+                acceptToken(cToken.RIGHTPAREN)
+                acceptToken(cToken.OPENBRACE)
+                parse_statements()
+                acceptToken(cToken.CLOSEBRACE)
+                parse_statement_prime()
+            Case Else
+                syntaxError = True
+        End Select
+    End Sub
+
+    Private Sub parse_statement_prime()
+        Select Case nextToken.kind
+            Case cToken.OPENBRACE
+                acceptToken(cToken.OPENBRACE)
+                acceptToken(cToken.ENDTOKEN)
+                parse_statements()
+                acceptToken(cToken.CLOSEBRACE)
+            Case Else
+                Return
+        End Select
+    End Sub
+
+    Private Sub parse_expression()
+        Select Case nextToken.kind
+            Case cToken.NUMBER
+                acceptToken(cToken.NUMBER)
+                parse_expression_double_prime()
+            Case Else
+                syntaxError = True
+        End Select
+    End Sub
+
+    Private Sub parse_expression_double_prime()
+        Select Case nextToken.kind
+            Case cToken.ADDITION, cToken.MULTIPY
+                parse_expression_prime()
+                parse_expression_double_prime()
+            Case Else
+                Return
+
+        End Select
+    End Sub
+
+    Private Sub parse_expression_prime()
+        Select Case nextToken.kind
+            Case cToken.ADDITION
+                acceptToken(cToken.ADDITION)
+                parse_expression()
+            Case cToken.MULTIPY
+                acceptToken(cToken.MULTIPY)
                 parse_expression()
             Case Else
                 syntaxError = True
         End Select
     End Sub
 
-    Private Sub parse_else()
-        lstResults.Items.Add("<else>")
+    Private Sub parse_condition()
         Select Case nextToken.kind
-            Case cToken.ELSETOKEN
-                acceptToken(cToken.ELSETOKEN)
-                parse_statement()
+            Case cToken.CONDITION
+                acceptToken(cToken.CONDITION)
+                parse_expression()
+                parse_expression()
             Case Else
-                Return
+                syntaxError = True
         End Select
-        lstResults.Items.Add("</else>")
     End Sub
+
 
     Private Sub btnSaveResults_Click(ByVal sender As System.Object,
 ByVal e As System.EventArgs) Handles btnSaveResults.Click
