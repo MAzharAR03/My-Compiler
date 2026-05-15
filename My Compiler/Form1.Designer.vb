@@ -31,11 +31,12 @@ Partial Class frmMyCompiler
         OpenFileDialog1 = New OpenFileDialog()
         SaveFileDialog1 = New SaveFileDialog()
         btnSaveResults = New Button()
+        trvParseTree = New TreeView()
         SuspendLayout()
         ' 
         ' txtProgram
         ' 
-        txtProgram.Location = New Point(184, 32)
+        txtProgram.Location = New Point(184, 29)
         txtProgram.Multiline = True
         txtProgram.Name = "txtProgram"
         txtProgram.Size = New Size(340, 90)
@@ -99,11 +100,19 @@ Partial Class frmMyCompiler
         btnSaveResults.Text = "Save Results"
         btnSaveResults.UseVisualStyleBackColor = True
         ' 
+        ' trvParseTree
+        ' 
+        trvParseTree.Location = New Point(566, 32)
+        trvParseTree.Name = "trvParseTree"
+        trvParseTree.Size = New Size(543, 363)
+        trvParseTree.TabIndex = 8
+        ' 
         ' frmMyCompiler
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(578, 450)
+        ClientSize = New Size(1131, 450)
+        Controls.Add(trvParseTree)
         Controls.Add(btnSaveResults)
         Controls.Add(btnParse)
         Controls.Add(btnLoadFile)
@@ -126,5 +135,6 @@ Partial Class frmMyCompiler
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents SaveFileDialog1 As SaveFileDialog
     Friend WithEvents btnSaveResults As Button
+    Friend WithEvents trvParseTree As TreeView
 
 End Class

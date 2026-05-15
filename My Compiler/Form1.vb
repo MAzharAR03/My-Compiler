@@ -7,6 +7,7 @@ Public Class frmMyCompiler
     End Sub
 
     Private Sub btnParse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnParse.Click
+        trvParseTree.Nodes.Clear()
         lstResults.Items.Clear()
         syntaxError = False
         scanner = New cScanner
@@ -51,9 +52,10 @@ Public Class frmMyCompiler
         End Try
     End Sub
 
-    Private Sub acceptToken(ByVal k As Integer)
+    Private Sub acceptToken(ByVal k As Integer, ByVal n As TreeNode)
         If nextToken.kind = k Then
             lstResults.Items.Add(nextToken.ToString)
+            n.Nodes.Add(nextToken.ToString)
             nextToken = scanner.scan
         Else
             syntaxError = True
@@ -61,68 +63,75 @@ Public Class frmMyCompiler
     End Sub
 
     Private Sub parse_program()
+        Dim currentNode As TreeNode = trvParseTree.Nodes.Add("program")
         lstResults.Items.Add("<program>")
         Select Case nextToken.kind
             Case cToken.OPENBRACES
-                acceptToken(cToken.OPENBRACES)
-                parse_statement()
-                acceptToken(cToken.CLOSEBRACES)
+                acceptToken(cToken.OPENBRACES, currentNode)
+                parse_statement(currentNode)
+                acceptToken(cToken.CLOSEBRACES, currentNode)
             Case Else
                 syntaxError = True
         End Select
         lstResults.Items.Add("</program>")
+        currentNode.ExpandAll()
     End Sub
 
-    Private Sub parse_statement()
+    Private Sub parse_statement(ByVal n As TreeNode)
         lstResults.Items.Add("<statement>")
+        Dim currentNode As TreeNode = n.Nodes.Add("statement")
         Select Case nextToken.kind
             Case cToken.IFTOKEN
-                parse_if()
+                parse_if(currentNode)
             Case cToken.IDENTIFIER
-                parse_assign()
+                parse_assign(currentNode)
             Case Else
                 syntaxError = True
         End Select
         lstResults.Items.Add("</statement>")
     End Sub
 
-    Private Sub parse_if()
+    Private Sub parse_if(ByVal n As TreeNode)
+        Dim currentNode As TreeNode = n.Nodes.Add("if")
         lstResults.Items.Add("<If>")
-        acceptToken(cToken.IFTOKEN)
-        acceptToken(cToken.LeftPara)
-        parse_expression()
-        acceptToken(cToken.RightPara)
-        parse_statement()
-        parse_else()
+        acceptToken(cToken.IFTOKEN, currentNode)
+        acceptToken(cToken.LeftPara, currentNode)
+        parse_expression(currentNode)
+        acceptToken(cToken.RightPara, currentNode)
+        parse_statement(currentNode)
+        parse_else(currentNode)
         lstResults.Items.Add("</If>")
     End Sub
 
-    Private Sub parse_expression()
+    Private Sub parse_expression(ByVal n As TreeNode)
+        Dim currentNode As TreeNode = n.Nodes.Add("expression")
         Select Case nextToken.kind
             Case cToken.EXPRESSION
-                acceptToken(cToken.EXPRESSION)
+                acceptToken(cToken.EXPRESSION, currentNode)
             Case Else
                 syntaxError = True
         End Select
     End Sub
 
-    Private Sub parse_assign()
+    Private Sub parse_assign(ByVal n As TreeNode)
+        Dim currentNode As TreeNode = n.Nodes.Add("assign")
         Select Case nextToken.kind
             Case cToken.IDENTIFIER
-                acceptToken(cToken.IDENTIFIER)
-                acceptToken(cToken.ASSIGNMENT)
-                parse_expression()
+                acceptToken(cToken.IDENTIFIER, currentNode)
+                acceptToken(cToken.ASSIGNMENT, currentNode)
+                parse_expression(currentNode)
             Case Else
                 syntaxError = True
         End Select
     End Sub
 
-    Private Sub parse_else()
+    Private Sub parse_else(ByVal n As TreeNode)
+        Dim currentNode As TreeNode = n.Nodes.Add("else")
         lstResults.Items.Add("<else>")
         Select Case nextToken.kind
             Case cToken.ELSETOKEN
-                acceptToken(cToken.ELSETOKEN)
-                parse_statement()
+                acceptToken(cToken.ELSETOKEN, currentNode)
+                parse_statement(currentNode)
             Case Else
                 Return
         End Select
